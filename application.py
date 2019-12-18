@@ -15,7 +15,7 @@ app = Flask(__name__)
 
 
 def get_file_path():
-    path_debug = os.environ['DATA_FOLDER_PATH']
+    path_debug = os.environ.get('DATA_FOLDER_PATH', '/MADE_UP')
     path_real = '/home'
     if os.path.exists(path_debug):
         return os.path.join(path_debug, 'stats.json')
@@ -31,7 +31,6 @@ def rtac():
         os.environ['TENANT_ID'],
         os.environ['FOLIO_USERNAME'],
         os.environ['FOLIO_PASSWORD'])
-    print(folio_client.okapi_token)
     bib_id = request.args.get('Bib_ID')
     onr = request.args.get('ONR')
     issn = request.args.get('ISSN')
@@ -197,7 +196,6 @@ def handle_error(e):
     if isinstance(e, HTTPException):
         code = e.code
     print("Error: {}".format(e))
-    print(str(e))
     empty = {
         'Item': {
             'Item_no': None,
@@ -218,9 +216,9 @@ def handle_error(e):
 
 def create_rtac_response(folio_client, bib_id):
     query = ('?query=(identifiers=/@value/@identifierTypeId="4f3c4c2c-8b04-4b54-9129-f732f1eb3e14" "{}" or identifiers=/@value/@identifierTypeId="28c170c6-3194-4cff-bfb2-ee9525205cf7" "{}")')
-    path = "/inventory/instances"
+    path = "/instance-storage/instances"
     q = query.format(bib_id, bib_id)
-    print(q)
+    print(f"looking for instances with Libris ids: {q}")
     instances = folio_client.folio_get(path, "instances", q)
     instance_id = instances[0]['id']
     holdings = folio_client.folio_get('/rtac/{}'.format(instance_id),
