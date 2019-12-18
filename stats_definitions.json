@@ -1,0 +1,82 @@
+[
+    {
+        "path": "/circulation/loans?limit=0&query=(loanDate==\"{}*\")",
+        "name": "loans",
+        "when": "today"
+    },
+    {
+        "path": "/circulation/requests?limit=0&query=(requestDate==\"{}*\")",
+        "name": "requests",
+        "when": "today"
+    },
+    {
+        "path": "/users?limit=0&query=(metadata.createdDate==\"{}*\")",
+        "name": "users_created",
+        "when": "today"
+    },
+    {
+        "path": "/users?limit=0&query=(metadata.updatedDate==\"{}*\")",
+        "name": "users_updated",
+        "when": "today"
+    },
+    {
+        "path": "/holdings-storage/holdings?limit=0&query=(metadata.updatedDate==\"{}*\")",
+        "name": "holdings_records_updated",
+        "when": "today"
+    },
+    {
+        "path": "/holdings-storage/holdings?limit=0&query=(metadata.createdDate==\"{}*\")",
+        "name": "holdings_records_created",
+        "when": "today"
+    },
+    {
+        "path": "/item-storage/items?limit=0&query=(metadata.updatedDate==\"{}*\")",
+        "name": "items_updated",
+        "when": "today"
+    },
+    {
+        "path": "/item-storage/items?limit=0&query=(metadata.createdDate==\"{}*\")",
+        "name": "items_created",
+        "when": "today"
+    },
+    {
+        "path": "/instance-storage/instances?limit=0&query=(metadata.updatedDate==\"{}*\")",
+        "name": "instances_updated",
+        "when": "today"
+    },
+    {
+        "path": "/instance-storage/instances?limit=0&query=(metadata.createdDate==\"{}*\")",
+        "name": "instances_created",
+        "when": "today"
+    },
+    {
+        "path": "/orders/composite-orders?limit=1&query=(metadata.updatedDate==\"{}*\")",
+        "name": "orders_updated",
+        "when": "today"
+    },
+    {
+        "path": "/orders/composite-orders?limit=1&query=(metadata.createdDate==\"{}*\")",
+        "name": "orders_created",
+        "when": "today"
+    },
+    {
+        "path": "/email?query=(status==\"FAILURE\"  AND date==\"{}*\")",
+        "name": "emails_failed",
+        "when": "today"
+    },
+    {
+        "path": "/email?query=(status==\"DELIVERED\"  AND date==\"{}*\")",
+        "name": "emails_sent",
+        "when": "today"
+    },
+    {
+        "path": "/scheduled-notice-storage/scheduled-notices?limit=0&query=(nextRunTime==\"{}*\")",
+        "name": "scheduled_notices_to_send_tomorrow",
+        "when": "tomorrow"
+    },
+    {
+        "path": "/circulation/loans?limit=0&query=(returnDate==\"{}*\")",
+        "name": "loans_returned",
+        "when": "today"
+    }
+]
