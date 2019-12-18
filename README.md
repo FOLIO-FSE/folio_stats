@@ -1,6 +1,11 @@
 # folio_stats
 
-Collects and displays various indicators in a FOLIO Instance.
+Collects and displays various indicators in a FOLIO Instance. Indicators are configurable and the tenant in focus can be changed using the environment variables see the .env_temp file
+
+Also acts as a RTAC API for the Swedish union catalog Libris.
+
+# Configuring indicators
+TBA
 
 # Installation
 Make sure you have Python >= 3.7 installed together with Flask
