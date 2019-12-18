@@ -2,6 +2,8 @@
 
 Collects and displays various indicators in a FOLIO Instance. Indicators are configurable and the tenant in focus can be changed using the environment variables see the .env_temp file
 
+![screen shot of stats](docs/chalmers_stats.png)
+
 Also acts as a RTAC API for the Swedish union catalog Libris.
 
 # Configuring indicators
