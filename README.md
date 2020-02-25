@@ -4,7 +4,8 @@ Collects and displays various indicators in a FOLIO Instance. Indicators are con
 
 ![screen shot of stats](docs/chalmers_stats.png)
 
-Also acts as a RTAC API for the Swedish union catalog Libris.
+Also acts as a RTAC API for the Swedish union catalog Libris. The following screen cast shows the RTAC response displayed in Librs
+![screen shot of RTAC](docs/libris_rtac.gif)
 
 # Configuring indicators
 TBA
