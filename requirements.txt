@@ -7,7 +7,7 @@ flask==1.1.1
 folioclient==0.6
 idna==2.8
 itsdangerous==1.1.0
-jinja2==2.10.1
+jinja2==2.11.3
 lxml==4.4.1
 markupsafe==1.1.1
 requests==2.22.0
