@@ -11,5 +11,5 @@ jinja2==2.11.3
 lxml==4.4.1
 markupsafe==1.1.1
 requests==2.22.0
-urllib3==1.25.8
+urllib3==1.26.5
 werkzeug==0.16.0
