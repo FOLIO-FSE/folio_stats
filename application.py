@@ -11,7 +11,7 @@ from dicttoxml import dicttoxml
 from folioclient.FolioClient import FolioClient
 from lxml import etree
 
-app = Flask(__name__)
+application = Flask(__name__)
 
 
 def get_file_path():
@@ -24,7 +24,7 @@ def get_file_path():
     raise Exception('None of the paths exists')
 
 
-@app.route('/rtac', methods=['GET'])
+@application.route('/rtac', methods=['GET'])
 def rtac():
     folio_client = FolioClient(
         os.environ['OKAPI_URL'],
@@ -36,29 +36,29 @@ def rtac():
     issn = request.args.get('ISSN')
     isbn = request.args.get('ISBN')
     resp = create_rtac_response(folio_client, bib_id)
-    if bib_id:
-        root = etree.Element('Item_Information')
-        for itemd in resp:
-            item = etree.fromstring(itemd)
-            root.append(item)
-        return Response(etree.tostring(root), mimetype='text/xml')
-    else:
+    if not bib_id:
         raise ValueError(
             'bib id missing. other identifiers not yet implemented')
 
+    root = etree.Element('Item_Information')
+    for itemd in resp:
+        item = etree.fromstring(itemd)
+        root.append(item)
+    return Response(etree.tostring(root), mimetype='text/xml')
 
-@app.route('/')
+
+@application.route('/')
 def hello_world():
     return "RTAC  and statistics app from FOLIO"
 
 
-@app.route('/statistics/')
-@app.route('/statistics/<date>')
+@application.route('/statistics/')
+@application.route('/statistics/<date>')
 def hi(date=date.today()):
-    definitions = list()
+    definitions = []
     with open('stats_definitions.json') as jf:
         definitions = json.load(jf)
-    names = list([f['name'] for f in definitions])
+    names = [f['name'] for f in definitions]
     names.sort()
     return render_template('stats_main.html',
                            date=date,
@@ -67,17 +67,17 @@ def hi(date=date.today()):
                            thirty_days_back=date.today() - timedelta(days=30))
 
 
-@app.route('/reset')
+@application.route('/reset')
 def reset():
-    saved_stats = dict()
+    saved_stats = {}
     with open(get_file_path(), 'w+') as f:
         f.write(json.dumps(saved_stats))
     return "reset"
 
 
-@app.route('/ninety')
+@application.route('/ninety')
 def create_90():
-    saved_stats = dict()
+    saved_stats = {}
     with open(get_file_path(), 'r') as f:
         saved_stats = json.load(f)
     i = 0
@@ -94,9 +94,9 @@ def create_90():
     return "done"
 
 
-@app.route('/seven')
+@application.route('/seven')
 def create_7():
-    saved_stats = dict()
+    saved_stats = {}
     with open(get_file_path(), 'r') as f:
         saved_stats = json.load(f)
     for d in range(1, 7):
@@ -109,9 +109,9 @@ def create_7():
     return "done"
 
 
-@app.route('/status')
+@application.route('/status')
 def get_status():
-    saved_stats = dict()
+    saved_stats = {}
     if not path.exists(get_file_path()):
         with open(get_file_path(), 'w+') as f:
             f.write(json.dumps(saved_stats))
@@ -126,9 +126,9 @@ def get_status():
     return jsonify(list(saved_stats.values()))
 
 
-@app.route('/today')
+@application.route('/today')
 def get_today():
-    saved_stats = dict()
+    saved_stats = {}
     if not path.exists(get_file_path()):
         with open(get_file_path(), 'w+') as f:
             f.write(json.dumps(saved_stats))
@@ -152,12 +152,11 @@ def get_date_data(date):
         os.environ['TENANT_ID'],
         os.environ['FOLIO_USERNAME'],
         os.environ['FOLIO_PASSWORD'])
-    definitions = list()
+    definitions = []
     with open('stats_definitions.json') as jf:
         definitions = json.load(jf)
     print(len(definitions))
-    res = dict()
-    res['date'] = str(date)
+    res = {'date': str(date)}
     for defi in definitions:
         print(defi)
         date_q = date if defi['when'] == "today" else tomorrow
@@ -168,7 +167,7 @@ def get_date_data(date):
     return res
 
 
-@app.route('/totals')
+@application.route('/totals')
 def get_totals():
     folio_client = FolioClient(
         os.environ['OKAPI_URL'],
@@ -190,7 +189,7 @@ def get_totals():
                     })
 
 
-@app.errorhandler(Exception)
+@application.errorhandler(Exception)
 def handle_error(e):
     code = 500
     if isinstance(e, HTTPException):
@@ -223,9 +222,7 @@ def create_rtac_response(folio_client, bib_id):
     instance_id = instances[0]['id']
     holdings = folio_client.folio_get('/rtac/{}'.format(instance_id),
                                       "holdings")
-    i = 0
-    for holding in holdings:
-        i += 1
+    for i, holding in enumerate(holdings):
         date = holding.get('dueDate', '')[:10]
         my_dict = {
             'Item_no': 1,
