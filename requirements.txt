@@ -10,6 +10,6 @@ itsdangerous==1.1.0
 jinja2==2.11.3
 lxml==4.4.1
 markupsafe==1.1.1
-requests==2.51.1
+requests==2.25.1
 urllib3==1.26.6
 werkzeug==0.16.0
