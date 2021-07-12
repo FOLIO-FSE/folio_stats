@@ -5,57 +5,57 @@
         "when": "today"
     },
     {
-        "path": "/circulation/requests?limit=0&query=(requestDate==\"{}*\")",
+        "path": "/circulation/requests?limit=0&query=(requestDate=\"{}*\")",
         "name": "requests",
         "when": "today"
     },
     {
-        "path": "/users?limit=0&query=(metadata.createdDate==\"{}*\")",
+        "path": "/users?limit=0&query=(metadata.createdDate=\"{}*\")",
         "name": "users_created",
         "when": "today"
     },
     {
-        "path": "/users?limit=0&query=(metadata.updatedDate==\"{}*\")",
+        "path": "/users?limit=0&query=(metadata.updatedDate=\"{}*\")",
         "name": "users_updated",
         "when": "today"
     },
     {
-        "path": "/holdings-storage/holdings?limit=0&query=(metadata.updatedDate==\"{}*\")",
+        "path": "/holdings-storage/holdings?limit=0&query=(metadata.updatedDate=\"{}*\")",
         "name": "holdings_records_updated",
         "when": "today"
     },
     {
-        "path": "/holdings-storage/holdings?limit=0&query=(metadata.createdDate==\"{}*\")",
+        "path": "/holdings-storage/holdings?limit=0&query=(metadata.createdDate=\"{}*\")",
         "name": "holdings_records_created",
         "when": "today"
     },
     {
-        "path": "/item-storage/items?limit=0&query=(metadata.updatedDate==\"{}*\")",
+        "path": "/item-storage/items?limit=0&query=(metadata.updatedDate=\"{}*\")",
         "name": "items_updated",
         "when": "today"
     },
     {
-        "path": "/item-storage/items?limit=0&query=(metadata.createdDate==\"{}*\")",
+        "path": "/item-storage/items?limit=0&query=(metadata.createdDate=\"{}*\")",
         "name": "items_created",
         "when": "today"
     },
     {
-        "path": "/instance-storage/instances?limit=0&query=(metadata.updatedDate==\"{}*\")",
+        "path": "/instance-storage/instances?limit=0&query=(metadata.updatedDate=\"{}*\")",
         "name": "instances_updated",
         "when": "today"
     },
     {
-        "path": "/instance-storage/instances?limit=0&query=(metadata.createdDate==\"{}*\")",
+        "path": "/instance-storage/instances?limit=0&query=(metadata.createdDate=\"{}*\")",
         "name": "instances_created",
         "when": "today"
     },
     {
-        "path": "/orders/composite-orders?limit=1&query=(metadata.updatedDate==\"{}*\")",
+        "path": "/orders/composite-orders?limit=1&query=(metadata.updatedDate=\"{}*\")",
         "name": "orders_updated",
         "when": "today"
     },
     {
-        "path": "/orders/composite-orders?limit=1&query=(metadata.createdDate==\"{}*\")",
+        "path": "/orders/composite-orders?limit=1&query=(metadata.createdDate=\"{}*\")",
         "name": "orders_created",
         "when": "today"
     },

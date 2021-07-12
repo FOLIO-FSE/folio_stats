@@ -77,6 +77,7 @@ def reset():
 
 @application.route('/ninety')
 def create_90():
+    folio_client = get_folio_client()
     saved_stats = {}
     with open(get_file_path(), 'r') as f:
         saved_stats = json.load(f)
@@ -86,24 +87,32 @@ def create_90():
         if str(cd) not in saved_stats:
             i += 1
             print(str(cd))
-            saved_stats[str(cd)] = get_date_data(cd)
+            saved_stats[str(cd)] = get_date_data(cd, folio_client)
             with open(get_file_path(), 'w+') as f:
                 f.write(json.dumps(saved_stats))
             if i > 7:
                 break
     return "done"
 
+def get_folio_client():
+    return FolioClient(
+        os.environ['OKAPI_URL'],
+        os.environ['TENANT_ID'],
+        os.environ['FOLIO_USERNAME'],
+        os.environ['FOLIO_PASSWORD'])
+
 
 @application.route('/seven')
 def create_7():
     saved_stats = {}
+    folio_client = get_folio_client()
     with open(get_file_path(), 'r') as f:
         saved_stats = json.load(f)
     for d in range(1, 7):
         cd = date.today() - timedelta(days=d)
         if str(cd) not in saved_stats:
             print(str(cd))
-            saved_stats[str(cd)] = get_date_data(cd)
+            saved_stats[str(cd)] = get_date_data(cd, folio_client)
             with open(get_file_path(), 'w+') as f:
                 f.write(json.dumps(saved_stats))
     return "done"
@@ -112,6 +121,7 @@ def create_7():
 @application.route('/status')
 def get_status():
     saved_stats = {}
+    folio_client = get_folio_client()
     if not path.exists(get_file_path()):
         with open(get_file_path(), 'w+') as f:
             f.write(json.dumps(saved_stats))
@@ -119,8 +129,7 @@ def get_status():
         saved_stats = json.load(f)
     yesterday = date.today() - timedelta(days=1)
     if str(yesterday) not in saved_stats:
-        saved_stats[str(yesterday)] = get_date_data(
-            yesterday)
+        saved_stats[str(yesterday)] = get_date_data(yesterday,folio_client)
         with open(get_file_path(), 'w+') as f:
             f.write(json.dumps(saved_stats))
     return jsonify(list(saved_stats.values()))
@@ -129,6 +138,7 @@ def get_status():
 @application.route('/today')
 def get_today():
     saved_stats = {}
+    folio_client = get_folio_client()
     if not path.exists(get_file_path()):
         with open(get_file_path(), 'w+') as f:
             f.write(json.dumps(saved_stats))
@@ -136,34 +146,33 @@ def get_today():
         saved_stats = json.load(f)
     yesterday = date.today() - timedelta(days=1)
     if str(yesterday) not in saved_stats:
-        saved_stats[str(yesterday)] = get_date_data(
-            yesterday)
+        saved_stats[str(yesterday)] = get_date_data(yesterday, folio_client)
         with open(get_file_path(), 'w+') as f:
             f.write(json.dumps(saved_stats))
-    saved_stats[str(date.today())] = get_date_data(date.today())
+    saved_stats[str(date.today())] = get_date_data(date.today(), folio_client)
     return jsonify(list(saved_stats.values()))
 
 
-def get_date_data(date):
+def get_date_data(date, folio_client):
     tomorrow = date + timedelta(days=1)
-    print(date)
-    folio_client = FolioClient(
-        os.environ['OKAPI_URL'],
-        os.environ['TENANT_ID'],
-        os.environ['FOLIO_USERNAME'],
-        os.environ['FOLIO_PASSWORD'])
+    print(date)   
     definitions = []
     with open('stats_definitions.json') as jf:
         definitions = json.load(jf)
     print(len(definitions))
     res = {'date': str(date)}
-    for defi in definitions:
-        print(defi)
+    for defi in definitions:        
         date_q = date if defi['when'] == "today" else tomorrow
         path = defi['path'].format(date_q)
         name = defi['name']
-        res[name] = folio_client.folio_get_single_object(path)['totalRecords']
-        print(defi)
+        try:
+            print(f"getting {path}")
+            res[name] = folio_client.folio_get_single_object(path)['totalRecords']
+            
+        except Exception as ee:
+            print(f"{ee} {path}")
+            raise ee
+
     return res
 
 
