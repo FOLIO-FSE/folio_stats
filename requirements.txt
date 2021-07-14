@@ -6,7 +6,7 @@ dicttoxml==1.7.4
 flask==2.0.1
 folioclient==0.6
 idna==2.8
-itsdangerous==1.1.0
+itsdangerous==2.0.1
 jinja2==2.11.3
 lxml==4.4.1
 markupsafe==1.1.1
