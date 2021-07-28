@@ -27,6 +27,9 @@ MarkupSafe = ">=2.0"
 Werkzeug = ">=2.0"
 flask-login = "*"
 requests-futures = "*"
+httpx = "*"
+asyncio = "*"
+flask-httpauth = "*"
 
 [requires]
 python_version = "3.7"

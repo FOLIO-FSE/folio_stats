@@ -3,7 +3,12 @@ import os
 import os.path
 from datetime import date, timedelta
 from os import path
+from random import randint
 import time
+import requests
+import httpx
+import asyncio
+from flask_httpauth import HTTPBasicAuth
 
 from werkzeug.utils import header_property
 from requests_futures.sessions import FuturesSession
@@ -12,12 +17,36 @@ from concurrent.futures import as_completed
 from werkzeug.datastructures import Headers
 
 from dicttoxml import dicttoxml
-from flask import Flask, Response, jsonify, render_template, request
+from flask import Flask, Response, app, jsonify, render_template, request
 from folioclient.FolioClient import FolioClient
 from lxml import etree
 from werkzeug.exceptions import HTTPException
 
 application = Flask(__name__)
+auth = HTTPBasicAuth()
+
+
+@auth.verify_password
+def verify_password(username, password):
+    try:
+        folio_client = FolioClient(
+            os.environ["OKAPI_URL"],
+            os.environ["TENANT_ID"],
+            os.environ["FOLIO_USERNAME"],
+            os.environ["FOLIO_PASSWORD"],
+        )
+        login_payload = {"username": username, "password": password}
+        login_path = "/authn/login"
+        resp = requests.post(
+            folio_client.okapi_url + login_path,
+            headers=folio_client.okapi_headers,
+            data=json.dumps(login_payload),
+        )
+        print(resp.status_code)
+        return resp.status_code == 201
+    except:
+        print("error!")
+        return False
 
 
 def get_file_path():
@@ -60,6 +89,7 @@ def hello_world():
 
 @application.route("/statistics/")
 @application.route("/statistics/<date>")
+@auth.login_required
 def hi(date=date.today()):
     definitions = []
     with open("stats_definitions.json") as jf:
@@ -76,6 +106,7 @@ def hi(date=date.today()):
 
 
 @application.route("/reset")
+@auth.login_required
 def reset():
     saved_stats = {}
     with open(get_file_path(), "w+") as f:
@@ -84,7 +115,7 @@ def reset():
 
 
 @application.route("/ninety")
-async def create_90():
+def create_90():
 
     folio_client = get_folio_client()
     saved_stats = {}
@@ -96,7 +127,7 @@ async def create_90():
         if str(cd) not in saved_stats:
             i += 1
             print(str(cd))
-            saved_stats[str(cd)] = await get_date_data(cd, folio_client)
+            saved_stats[str(cd)] = get_date_data(cd, folio_client)
             with open(get_file_path(), "w+") as f:
                 f.write(json.dumps(saved_stats))
             if i > 7:
@@ -114,7 +145,7 @@ def get_folio_client():
 
 
 @application.route("/seven")
-async def create_7():
+def create_7():
     saved_stats = {}
     folio_client = get_folio_client()
     with open(get_file_path(), "r") as f:
@@ -123,14 +154,15 @@ async def create_7():
         cd = date.today() - timedelta(days=d)
         if str(cd) not in saved_stats:
             print(str(cd))
-            saved_stats[str(cd)] = await get_date_data(cd, folio_client)
+            saved_stats[str(cd)] = get_date_data(cd, folio_client)
             with open(get_file_path(), "w+") as f:
                 f.write(json.dumps(saved_stats))
     return "done"
 
 
 @application.route("/status")
-async def get_status():
+@auth.login_required
+def get_status():
     saved_stats = {}
     folio_client = get_folio_client()
     if not path.exists(get_file_path()):
@@ -140,14 +172,31 @@ async def get_status():
         saved_stats = json.load(f)
     yesterday = date.today() - timedelta(days=1)
     if str(yesterday) not in saved_stats:
-        saved_stats[str(yesterday)] = await get_date_data(yesterday, folio_client)
+        saved_stats[str(yesterday)] = get_date_data(yesterday, folio_client)
         with open(get_file_path(), "w+") as f:
             f.write(json.dumps(saved_stats))
     return jsonify(list(saved_stats.values()))
+
+
+@application.route("/status2")
+def get_status2():
+    saved_stats = {}
+    folio_client = get_folio_client()
+    if not path.exists(get_file_path()):
+        with open(get_file_path(), "w+") as f:
+            f.write(json.dumps(saved_stats))
+    with open(get_file_path(), "r") as f:
+        saved_stats = json.load(f)
+    yesterday = date.today() - timedelta(days=1)
+    if str(yesterday) not in saved_stats:
+        saved_stats[str(yesterday)] = get_date_data(yesterday, folio_client)
+        with open(get_file_path(), "w+") as f:
+            f.write(json.dumps(saved_stats))
+    return "done"
 
 
 @application.route("/today")
-async def get_today():
+def get_today():
     saved_stats = {}
     folio_client = get_folio_client()
     if not path.exists(get_file_path()):
@@ -157,14 +206,14 @@ async def get_today():
         saved_stats = json.load(f)
     yesterday = date.today() - timedelta(days=1)
     if str(yesterday) not in saved_stats:
-        saved_stats[str(yesterday)] = await get_date_data(yesterday, folio_client)
+        saved_stats[str(yesterday)] = get_date_data(yesterday, folio_client)
         with open(get_file_path(), "w+") as f:
             f.write(json.dumps(saved_stats))
-    saved_stats[str(date.today())] = await get_date_data(date.today(), folio_client)
+    saved_stats[str(date.today())] = get_date_data(date.today(), folio_client)
     return jsonify(list(saved_stats.values()))
 
 
-async def get_date_data(date, folio_client: FolioClient):
+def get_date_data(date, folio_client: FolioClient):
     tomorrow = date + timedelta(days=1)
     print(date)
     definitions = []
