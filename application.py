@@ -42,10 +42,8 @@ def verify_password(username, password):
             headers=folio_client.okapi_headers,
             data=json.dumps(login_payload),
         )
-        print(resp.status_code)
         return resp.status_code == 201
     except:
-        print("error!")
         return False
 
 
@@ -126,7 +124,6 @@ def create_90():
         cd = date.today() - timedelta(days=d)
         if str(cd) not in saved_stats:
             i += 1
-            print(str(cd))
             saved_stats[str(cd)] = get_date_data(cd, folio_client)
             with open(get_file_path(), "w+") as f:
                 f.write(json.dumps(saved_stats))
@@ -153,7 +150,6 @@ def create_7():
     for d in range(1, 7):
         cd = date.today() - timedelta(days=d)
         if str(cd) not in saved_stats:
-            print(str(cd))
             saved_stats[str(cd)] = get_date_data(cd, folio_client)
             with open(get_file_path(), "w+") as f:
                 f.write(json.dumps(saved_stats))
@@ -215,7 +211,6 @@ def get_today():
 
 def get_date_data(date, folio_client: FolioClient):
     tomorrow = date + timedelta(days=1)
-    print(date)
     definitions = []
     with open("stats_definitions.json") as jf:
         definitions = json.load(jf)
@@ -234,15 +229,11 @@ def get_date_data(date, folio_client: FolioClient):
             future.tic = time.perf_counter()
             futures.append(future)
         except Exception as ee:
-            print(f"{ee} {path}")
             raise ee
 
     for idx, future in enumerate(as_completed(futures)):
         toc = time.perf_counter()
         resp = future.result()
-        print(
-            f"completed {future.idx} {future.path} in {toc - future.tic:0.4f}s {resp.json()['totalRecords']}"
-        )
         res[future.namet] = resp.json()["totalRecords"]
     return res
 
