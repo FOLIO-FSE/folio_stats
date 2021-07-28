@@ -7,6 +7,7 @@ verify_ssl = true
 pycodestyle = "*"
 flake8 = "*"
 autopep8 = "*"
+black = "*"
 
 [packages]
 lxml = ">=4.6.3"
@@ -24,6 +25,11 @@ Flask = "==2.0.1"
 Jinja2 = ">=3.0"
 MarkupSafe = ">=2.0"
 Werkzeug = ">=2.0"
+flask-login = "*"
+requests-futures = "*"
 
 [requires]
 python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true
